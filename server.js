@@ -28,6 +28,17 @@ cron.schedule('*/30 * * * *', async () => {
     }
 
 
+    // await checkIfPostEditGoogle()
+    // await googleSheetIntegration()
+
+
+})
+
+
+cron.schedule('0 * * * *', async () => {
+    console.log("every hour")
+
+
     await checkIfPostEditGoogle()
     // await googleSheetIntegration()
 
