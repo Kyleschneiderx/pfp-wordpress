@@ -190,6 +190,50 @@ const writeNewBlog = async (topic) =>{
 }
 
 
+const listsToBePosted = async () =>{
+    try{
+        const doc = new GoogleSpreadsheet(process.env.GOOOGLESHEETID)
+        await doc.useServiceAccountAuth({
+            client_email: process.env.GOOGLEEMAIL,
+            private_key: process.env.GOOGLEPK.replace(/\\n/g, "\n"),
+        });
+        
+        
+        await doc.loadInfo();
+        
+        const firstSheet = await doc.sheetsByIndex[0]
+      
+        const numRows = await firstSheet.rowCount;
+        // const range = `A2:Z${numRows}`;
+        // console.log(range)
+      
+        const col = await firstSheet.getRows()
+        console.log(col)
+        const chekc = []
+        let i = 0;
+      
+        while(i < col.length){
+            if(col[i]["Posted"] !== "Yes"){
+              console.log(col[i]["Keywords"])
+              chekc.push({index: i, title: col[i]["Keywords"]})              
+            }
+          i++
+        }
+      
+      
+        const selectedNumbers = chekc.slice(0, 5); // Send message to first 5 numbers in the list
+        console.log(selectedNumbers)
+        return chekc
+    }catch(err){
+        console.log(err)
+    }
+
+}
+
+
+
+
+
 
 
 
@@ -227,7 +271,7 @@ const googleSheetIntegration = async () =>{
       }
     
     
-      const selectedNumbers = chekc.slice(0, 20); // Send message to first 5 numbers in the list
+      const selectedNumbers = chekc.slice(0, 5); // Send message to first 5 numbers in the list
       console.log(selectedNumbers)
       selectedNumbers.forEach(async number => {
   
@@ -315,8 +359,41 @@ const checkIfPostEditGoogle = async () =>{
   
 }
 
+
+const postOne = async (title, index) =>{
+
+    const doc = new GoogleSpreadsheet(process.env.GOOOGLESHEETID)
+  
+    await doc.useServiceAccountAuth({
+        client_email: process.env.GOOGLEEMAIL,
+        private_key: process.env.GOOGLEPK.replace(/\\n/g, "\n"),
+    });
+    
+    
+    await doc.loadInfo();
+    
+    const firstSheet = await doc.sheetsByIndex[0]
+
+    const post = await writeNewBlog(title)
+    
+    
+    await firstSheet.loadCells();
+    const cell = await firstSheet.getCell(index+1, 1 )
+    cell.value = "Yes";
+
+    const today = moment();
+    const formattedDate = today.format('MM/DD/YY');
+    const date = await firstSheet.getCell(index+1, 2)
+    date.value = formattedDate
+
+    await firstSheet.saveUpdatedCells();
+
+}
+
 module.exports = {
     googleSheetIntegration,
-    checkIfPostEditGoogle
+    checkIfPostEditGoogle,
+    listsToBePosted,
+    postOne
 }
 
