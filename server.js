@@ -18,7 +18,7 @@ cron.schedule('*/30 * * * *', async () => {
 
     const klist = await listsToBePosted()
 
-    const slice = klist.slice(0,10)
+    const slice = klist.slice(0,7)
 
     for(let i=0; i<slice.length; i++){
         
@@ -73,7 +73,7 @@ app.route('/new').get(async (req,res)=>{
 
     const klist = await listsToBePosted()
 
-    const slice = klist.slice(0,5)
+    const slice = klist.slice(0,2)
 
     for(let i=0; i<slice.length; i++){
         
