@@ -13,7 +13,7 @@ const {
 const cors = require('cors');
 
 
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('30 5 * * 1', async () => {
     console.log("every thirty min")
 
     const klist = await listsToBePosted()
@@ -35,7 +35,7 @@ cron.schedule('*/30 * * * *', async () => {
 })
 
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('30 5 * * 1', async () => {
     console.log("every hour")
 
 
