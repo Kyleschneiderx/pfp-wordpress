@@ -232,12 +232,6 @@ const listsToBePosted = async () =>{
 
 
 
-
-
-
-
-
-
 const googleSheetIntegration = async () =>{
     // await checkIfPostEditGoogle()
     
@@ -360,6 +354,7 @@ const checkIfPostEditGoogle = async () =>{
 }
 
 
+
 const postOne = async (title, index) =>{
 
     const doc = new GoogleSpreadsheet(process.env.GOOOGLESHEETID)
@@ -390,10 +385,154 @@ const postOne = async (title, index) =>{
 
 }
 
+
+
+
+/// This is the Menopause testing section
+
+
+const writeNewBlogMenopasue = async (topic) =>{
+  // `write blog sections\nblog topic: ${query}`
+
+    try{
+
+    const outline = await gpt3(`write me a list blog post subtitles for a blog post titled:\n ${topic}`);
+      
+
+      // const sections = await breakSection(outline)
+    const sections = outline.split('\n')
+    console.log(sections)
+
+    console.log("in write Blog")
+
+
+    const blog = []
+
+    for(let i = 0; i<sections.length; i++){
+
+
+
+      let newString = sections[i].substring(3)
+      const prompt = await gpt3(`write a blog post section for:\n ${newString}`)
+
+      if(i == 0 ){
+        blog.push(`<h3>${newString}</h3>\n${prompt}\n
+        <div style="background-color: #7371fc; width: 100%; max-width: 100%; height: 200px; display: flex; justify-content: center; align-items: center; flex-direction: column; color: white; border-radius: 10px;">
+        <h1 style="font-size: 24px; text-align: center; margin-bottom: 20px; color: white;">Discover the Game-Changer for Menopause Relief We Absolutely Swear By! 💜👉</h1>
+        <a class="button" style="background-color: #ffffff; color: #0099cc; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; text-decoration: none; text-align: center; transition: background-color 0.3s ease;" href="https://www.amazon.com/Joylux-Intimate-Wellness-Menopausal-Hydration/dp/B0B42KYZ98/ref=sr_1_2?crid=2BWFVE6LJ915G&amp;keywords=joylux&amp;qid=1697663400&amp;sprefix=joylux%252Caps%252C212&amp;sr=8-2&amp;_encoding=UTF8&amp;tag=pfp007-20&amp;linkCode=ur2&amp;linkId=5175162db2555222819ca88639b6316a&amp;camp=1789&amp;creative=9325" target="_blank" rel="noopener">Learn More</a>
+        </div>
+        `)
+      }else{
+        blog.push(`<h3>${newString}</h3>\n${prompt}`)
+      }
+
+
+      
+
+      console.log(blog)
+
+    }
+
+    const concatenatedString = blog.join("\n");
+
+    console.log(concatenatedString, "End of Concat ");
+
+    const post = await postToPFP(capitalizeTitle(topic), concatenatedString)
+
+    }catch(err){
+    console.log(err)
+    }
+
+// return blog
+
+}
+
+
+const postOneMenopause = async (title, index) =>{
+
+  const doc = new GoogleSpreadsheet(process.env.GOOOGLESHEETID)
+
+  await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLEEMAIL,
+      private_key: process.env.GOOGLEPK.replace(/\\n/g, "\n"),
+  });
+  
+  
+  await doc.loadInfo();
+  
+  const firstSheet = await doc.sheetsByIndex[2]
+
+  const post = await writeNewBlogMenopasue(title)
+  
+  
+  await firstSheet.loadCells();
+  const cell = await firstSheet.getCell(index+1, 1 )
+  cell.value = "Yes";
+
+  const today = moment();
+  const formattedDate = today.format('MM/DD/YY');
+  const date = await firstSheet.getCell(index+1, 2)
+  date.value = formattedDate
+
+  await firstSheet.saveUpdatedCells();
+
+}
+
+
+
+
+
+const listsToBePostedMenopause = async () =>{
+  try{
+      const doc = new GoogleSpreadsheet(process.env.GOOOGLESHEETID)
+      await doc.useServiceAccountAuth({
+          client_email: process.env.GOOGLEEMAIL,
+          private_key: process.env.GOOGLEPK.replace(/\\n/g, "\n"),
+      });
+      
+      
+      await doc.loadInfo();
+      
+      const firstSheet = await doc.sheetsByIndex[2]
+    
+
+      const numRows = await firstSheet.rowCount;
+      // const range = `A2:Z${numRows}`;
+      console.log(numRows)
+    
+      const col = await firstSheet.getRows()
+      console.log(col)
+      const chekc = []
+      let i = 0;
+    
+      while(i < col.length){
+          if(col[i]["Posted"] !== "Yes"){
+            console.log(col[i]["Keywords"])
+            chekc.push({index: i, title: col[i]["Keywords"]})              
+          }
+        i++
+      }
+    
+    
+      const selectedNumbers = chekc.slice(0, 5); // Send message to first 5 numbers in the list
+      console.log(selectedNumbers)
+      return chekc
+  }catch(err){
+      console.log(err)
+  }
+
+}
+
+
+
+
+
 module.exports = {
     googleSheetIntegration,
     checkIfPostEditGoogle,
     listsToBePosted,
-    postOne
+    listsToBePostedMenopause,
+    postOne,
+    postOneMenopause
 }
 

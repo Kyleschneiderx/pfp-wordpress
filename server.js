@@ -7,14 +7,16 @@ const {
     googleSheetIntegration,
     checkIfPostEditGoogle,
     listsToBePosted,
-    postOne
+    postOne,
+    listsToBePostedMenopause,
+    postOneMenopause
 
 } = require('./helper/helpers')
 const cors = require('cors');
 
 
 cron.schedule('30 5 * * 1', async () => {
-    console.log("every thirty min")
+    console.log("5:30 AM every Monday")
 
     const klist = await listsToBePosted()
 
@@ -36,11 +38,33 @@ cron.schedule('30 5 * * 1', async () => {
 
 
 cron.schedule('30 5 * * 1', async () => {
-    console.log("every hour")
+    console.log("5:30 AM every Monday")
 
 
     await checkIfPostEditGoogle()
     // await googleSheetIntegration()
+
+
+})
+
+
+
+
+cron.schedule('*/10 * * * *', async () => {
+    console.log("every ten min")
+
+    const klist = await listsToBePostedMenopause()
+
+    const slice = klist.slice(0,7)
+
+    console.log(slice)
+
+    for(let i=0; i<slice.length; i++){
+        
+        console.log(slice[i].title, slice[i].index)      
+        await postOneMenopause(slice[i].title, slice[i].index)
+
+    }
 
 
 })
@@ -71,19 +95,18 @@ app.route('/check').get(async (req,res)=>{
 app.route('/new').get(async (req,res)=>{
     // await checkIfPostEditGoogle()
 
-    const klist = await listsToBePosted()
+    const klist = await listsToBePostedMenopause()
 
     const slice = klist.slice(0,2)
+
+    console.log(slice)
 
     for(let i=0; i<slice.length; i++){
         
         console.log(slice[i].title, slice[i].index)      
-        await postOne(slice[i].title, slice[i].index)
+        await postOneMenopause(slice[i].title, slice[i].index)
 
     }
-
-
-    
 
 
 
