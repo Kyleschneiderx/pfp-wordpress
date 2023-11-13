@@ -50,24 +50,24 @@ cron.schedule('30 5 * * 1', async () => {
 
 
 
-cron.schedule('0 * * * *', async () => {
-    console.log("every ten min")
+// cron.schedule('0 * * * *', async () => {
+//     console.log("every ten min")
 
-    const klist = await listsToBePostedMenopause()
+//     const klist = await listsToBePostedMenopause()
 
-    const slice = klist.slice(0,9)
+//     const slice = klist.slice(0,9)
 
-    console.log(slice)
+//     console.log(slice)
 
-    for(let i=0; i<slice.length; i++){
+//     for(let i=0; i<slice.length; i++){
         
-        console.log(slice[i].title, slice[i].index)      
-        await postOneMenopause(slice[i].title, slice[i].index)
+//         console.log(slice[i].title, slice[i].index)      
+//         await postOneMenopause(slice[i].title, slice[i].index)
 
-    }
+//     }
 
 
-})
+// })
 
 
 app.use(cors());
